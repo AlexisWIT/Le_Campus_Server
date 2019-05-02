@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+.input-group-addon {
+    min-width:120px;
+    text-align:left;
+}
+
+#familyTreeSection {
+	display:none;
+}
+
+#showAncestorBtn {
+	display:none;
+}
+
+#showDescendantBtn {
+	display:none;
+}
+
+#deletePersonBtn {
+	display:none;
+}
+
+#editPersonBtn {
+	display:none;
+}
+
+#multiAddBody {
+	display:none;
+}
+
+#multiAddFooter {
+	display:none;
+}
+
+#loadingWindow {
+  keyboard: false;
+}
+
+.alert {
+	display:none;
+}
+
+#loader {
+	display: none; 
+	margin-left: auto; 
+	margin-right: auto; 
+	width: 100px; 
+	height: 100px;
+}
