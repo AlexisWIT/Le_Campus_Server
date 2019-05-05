@@ -30,7 +30,12 @@ public class User {
 		// TODO Auto-generated constructor stub
 	}
     
-    
+	public User(String studentNumber, String realname, String uolEmail) {
+		super();
+		this.studentNumber = studentNumber;
+		this.realname = realname;
+		this.uolEmail = uolEmail;
+	}
 
 	public User(Integer localId, String password, String studentNumber, String nickname, String ucasNumber,
 			String realname, String preferedName, String dateofbirth, String uolEmail, String friendList) {

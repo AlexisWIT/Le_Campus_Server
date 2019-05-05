@@ -21,7 +21,7 @@ $(document).ready(function () {
 		
 		$.ajax({
 			type:"GET",
-			url:"/LeCampus/BuildingGeoFence",
+			url:"/LeCampusServer/BuildingGeoFence",
 			success:function(buildingGeoFenceResponse) {
 				var buildingGeoFenceData = buildingGeoFenceResponse.buildingGeoFenceList;
 				
@@ -47,7 +47,7 @@ $(document).ready(function () {
 		
 		$.ajax({
 			type:"GET",
-			url:"/LeCampus/EmergencyRequest",
+			url:"/LeCampusServer/EmergencyRequest",
 			success:function(emergencyRequestResponse) {
 				
 				console.log("Received Ancestor tree");
@@ -74,7 +74,7 @@ $(document).ready(function () {
 		
 		$.ajax({
 			type:"GET",
-			url:"/LeCampus/Footprint",
+			url:"/LeCampusServer/Footprint",
 			//data:"key="+selectedFootprint,
 			success:function(footprintResponse) {
 				
@@ -106,7 +106,7 @@ $(document).ready(function () {
 		
 		$.ajax({
 			type:"GET",
-			url:"/LeCampus/BuildingGeoFence",
+			url:"/LeCampusServer/BuildingGeoFence",
 			success:function(buildingGeoFenceResponse) {
 				var buildingGeoFenceData = buildingGeoFenceResponse.buildingGeoFenceList;
 				
@@ -167,210 +167,12 @@ $(document).ready(function () {
 		$("#singleAddCompleteAlert").fadeOut();
 		
 	});
-	
-	$("#submit-newSingleGeoFence").click(function(){
-		$("#multiAddInProgressAlert").fadeOut();
-		$("#multiAddErrorAlert").fadeOut();
-		$("#multiAddCompleteAlert").fadeOut();
-		$("#singleAddInProgressAlert").fadeOut();
-		$("#singleAddErrorAlert").fadeOut();
-		$("#singleAddCompleteAlert").fadeOut();
 		
-		$("#geofenceName").val("");
-		
-		
-		$("#deleteGeoFenceBtn").hide();
-		$("#editGeoFenceBtn").hide();
-		
-//		if ($("#modeToken").val()==1) {
-			console.log("Input Mode ["+$("#modeToken").val()+"]");
-			
-			$("#form-addSingleNew").validate({
-				errorClass:'errors1',
-				rules: {
-					"geofence-name":{
-						required:true
-					},
-					"geofence-address":{
-						
-					},
-					"geofence-image-url":{
-						
-					},
-					"geofence-category":{
-						
-					},
-					"geofence-center":{
-						required:true
-					},
-					"geofence-website":{
-						
-					}
-					
-				},
-				messages:{
-					"geofence-name":{
-						required: "This field is required!"
-					},
-					"geofence-address":{
-						
-					},
-					"geofence-image-url":{
-						
-					},
-					"geofence-category":{
-						
-					},
-					"geofence-center":{
-						required: "This field is required!"
-					},
-					"geofence-website":{
-					}
-				},
-				submitHandler:function(form){
-					
-					$("#singleAddInProgressInfo").html("<strong>Please wait...</strong> Your request is being processing.");
-					$("#singleAddInProgressAlert").fadeIn();
-					
-					var name = $("#geofence-name").val();
-					var address = $("#geofence-address").val();
-					
-					var imageUrl = $("#geofence-image-url").val();
-					if (imageUrl === undefined || imageUrl == "" ) imageUrl=null;
-					var category = $("#geofence-category").val();
-					if (category === undefined || category == "" ) category=null;
-					var center = $("#geofence-center").val();
-					if (center === undefined || center == "" ) center=null;
-					var website = $("#geofence-website").val();
-					if (website === undefined || website == "" ) website=null;
-					
-					var data = '{"name": "'+name+'", "address": "'+address+'", "imageUrl": "'+imageUrl+'", "category": "'+category+'", "center": "'center+'", "website": "'+website+'"}';
-					console.log(data);
-					
-					var jsonData = JSON.parse(data);
-					console.log("Data sent: "+jsonData);
-					
-					
-					$.ajax({
-						type: "POST",
-						url: "/api/geofence/addJSON",
-						contentType: "application/json",
-						dataType: 'json',
-						data: JSON.stringify(jsonData),
-						success:function(response){
-							console.log(response.result);
-							if(response.result=="false"){
-								console.log(response.message);
-								$("#singleAddInProgressAlert").toggle();
-								$("#singleAddFailedInfo").html("<strong>Failed to add new GeoFence!</strong> "+response.message);
-								$("#singleAddErrorAlert").fadeIn(1000);
-								
-							} else if (response.result=="true") {
-								$("#singleAddInProgressAlert").toggle();
-								$("#singleAddCompleteInfo").html("<strong>Done!</strong> "+response.message);
-								$("#singleAddCompleteAlert").fadeIn();
-								completeChange(response.result);
-								$("#addGeoFenceModal").modal('hide');
-								
-							}
-							
-						}
-					
-					});
-				}
-					
-			});
-			
-			
-		});
-		
-		$("#cancelAddMulti").click(function(){
-			completeChange("true");
-		});
-		
-		// Multi Add
-		$("#submit-newMultiGeoFence").click(function() {
-			
-			$("#multiAddInProgressAlert").fadeOut();
-			$("#multiAddErrorAlert").fadeOut();
-			$("#multiAddCompleteAlert").fadeOut();
-			$("#singleAddInProgressAlert").fadeOut();
-			$("#singleAddErrorAlert").fadeOut();
-			$("#singleAddCompleteAlert").fadeOut();
-			
-			console.log("Input Mode ["+$("#modeToken").val()+"]");
-			
-			$("#geofenceName").val("");
-			
-			
-			$("#deleteGeoFenceBtn").hide();
-			$("#editGeoFenceBtn").hide();
-			
-			$("#form-addMultiNew").validate({
-				errorClass:'errors2',
-				rules: {
-					"mutipleAddArea":{
-						required:true
-					}
-					
-				},
-				messages:{
-					"mutipleAddArea":{
-						required: "This field is required!"
-					}
-				},
-				submitHandler:function(form){
-					
-					$("#multiAddInProgressInfo").html("<strong>Please wait...</strong> Your request is being processing.");
-					$("#multiAddInProgressAlert").fadeIn();
-					
-					var data = $("#mutipleAddArea").val();
-					console.log("Data input: "+data);
-					
-					try {
-						var jsonData = JSON.parse(data);
-						console.log("Data sent: "+jsonData);
-						
-						$.ajax({
-							type: "POST",
-							url: "/api/geofence/addJSON",
-							contentType: "application/json",
-							dataType: 'json',
-							data: JSON.stringify(jsonData),
-							success:function(response){
-								console.log(response.result);
-								if(response.result=="false"){
-									console.log(response.message);
-									$("#multiAddInProgressAlert").toggle();
-									$("#multiAddFailedInfo").html("<strong>Failed to add new GeoFence!</strong> "+response.message);
-									$("#multiAddErrorAlert").fadeIn(1000);
-									
-								} else if (response.result=="true") {
-									$("#multiAddInProgressAlert").toggle();
-									$("#multiAddCompleteInfo").html("<strong>Done!</strong> "+response.message);
-									$("#multiAddCompleteAlert").fadeIn();
-									completeChange(response.result);
-									$("#addGeoFenceModal").modal('hide');
-									
-								}
-								
-							}
-						
-						});
-						
-					} catch (exception) {
-						$("#multiAddInProgressAlert").toggle();
-						$("#multiAddFailedInfo").html("<strong>JSON Input "+exception.name+":</strong> "+exception.message);
-						$("#multiAddErrorAlert").fadeIn(1000);
-
-					}
-					
-				}
-					
-			});
-		
-		
+	$("#cancelAddMulti").click(function(){
+		completeChange("true");
 	});
+		
+		
 	
 	$("#cancel-editedGeoFence").click(function(){
 		$("#editErrorAlert").fadeOut();
@@ -419,119 +221,7 @@ $(document).ready(function () {
 		
 	});
 	
-	$("#submit-editedGeoFence").click(function(){
-		$("#editErrorAlert").fadeOut();
-		$("#editCompleteAlert").fadeOut();
-		$("#editInProgressAlert").fadeOut();
-
-		$("#geofenceName").val("");
-		
-		
-		$("#deleteGeoFenceBtn").hide();
-		$("#editGeoFenceBtn").hide();
-		
-		$("#form-edit").validate({
-			errorClass:'errors',
-			rules: {
-				"edit-geofence-name":{
-					required:true
-					
-				},
-				"edit-geofence-address":{
-					
-				},
-				"edit-geofence-image-url":{
-					
-				},
-				"edit-geofence-category":{
-					
-				},
-				"edit-geofence-center":{
-					required:true
-				},
-				"edit-geofence-website":{
-					
-				}
-				
-			},
-			messages:{
-				"edit-geofence-name":{
-					required: "This field is required!"
-					
-				},
-				"edit-geofence-address":{
-					
-				},
-				"edit-geofence-image-url":{
-					
-				},
-				"edit-geofence-category":{
-					
-				},
-				"edit-geofence-center":{
-					required: "This field is required!"
-				},
-				"edit-geofence-website":{
-					
-				}
-			},
-			submitHandler:function(form){
-				$("#editInProgressInfo").html("");
-				$("#editInProgressInfo").html("<strong>Please wait...</strong> Your request is being processing.");
-				$("#editInProgressAlert").fadeIn();
-				
-				var name = $("#edit-geofence-name").val();
-				var address = $("#edit-geofence-address").val();
-				
-				var imageUrl = $("#edit-geofence-image-url").val();
-				if (imageUrl === undefined || imageUrl == "" ) imageUrl=null;
-				var category = $("#edit-geofence-category").val();
-				if (category === undefined || category == "" ) category=null;
-				var center = $("#edit-geofence-center").val();
-				if (center === undefined || center == "" ) center=null;
-				var website = $("#edit-geofence-website").val();
-				if (website === undefined || website == "" ) website=null;
-				var actualKey = $("#editToken").val();
-				
-				var data = '{ "name": "'+name+'", "address": "'+address+'", "imageUrl": "'+imageUrl+'", "category": "'+category+'", "center": "'+center+'", "website": "'+website+'", "actualKey": "'+actualKey+'"}';
-				console.log(data);
-				
-				var jsonData = JSON.parse(data);
-				console.log("Data sent: "+jsonData);
-				
-				$.ajax({
-					type: "POST",
-					url: "/LeCampus/editGeoFenceJSON",
-					contentType: "application/json",
-					dataType: 'json',
-					data: JSON.stringify(jsonData),
-					success:function(response){
-						console.log(response.result);
-						if(response.result=="false"){
-							console.log(response.message);
-							$("#editInProgressAlert").toggle();
-							$("#editFailedInfo").html("");
-							$("#editFailedInfo").html("<strong>Update Geofence failed!</strong> "+response.message);
-							$("#editErrorAlert").fadeIn(1000);		
-							
-						} else if (response.result=="true") {
-							$("#editInProgressAlert").toggle();
-							$("#editCompleteInfo").html("<strong>Done!</strong> "+response.message);
-							$("#editCompleteAlert").fadeIn();
-							completeChange(response.result);
-							$("#editGeoFenceModal").modal('hide');
-							
-						}
-						
-					}
-				
-				});
-					
-			}
-
-		});
-			
-	});
+	
 	
 	$("#confirm-deleteGeoFence").click(function(){
 		
@@ -586,7 +276,6 @@ $(document).ready(function () {
 	
 	$("#mapTab").click(function(){
 		
-		
 		$("#deleteGeoFenceBtn").hide();
 		$("#editGeoFenceBtn").hide();
 		completeChange("true");
@@ -604,8 +293,6 @@ $(document).ready(function () {
 		$("#mapTab").removeClass("active");
 
 	});
-	
-	
 	
 });
 
@@ -637,13 +324,13 @@ function completeChange(result){
 		//$("#loadingWindow").modal('show');
 		$.ajax({
 			type:"GET",
-			url:"/LeCampus/BuildingGeoFence",
+			url:"/LeCampusServer/BuildingGeoFence",
 			success:function(buildingGeoFenceResponse) {
 				var buildingGeoFenceData = buildingGeoFenceResponse.buildingGeoFenceList;
 				
 				console.log("Received Data Type: "+typeof buildingGeoFenceData);
 				console.log(buildingGeoFenceResponse.buildingGeoFenceList);
-				initFamilyTree(buildingGeoFenceData);
+				initMap(buildingGeoFenceData);
 				$("#loadingWindow").modal('hide');
 				console.log("Map Refereshed");
 				

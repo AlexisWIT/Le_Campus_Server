@@ -18,6 +18,7 @@ public class PublicEvent {
 	private String holdBy;
 	private String eventType;
 	private String eventTitle;  // 'Cryptography and Internet Security' or 'Neon Night: Riders vs Rocks'
+	@Column(columnDefinition = "TEXT")
 	private String eventDesc;
 	private String eventCode;
 

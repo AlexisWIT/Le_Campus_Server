@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 
 import leCampusServer.domain.BuildingGeoFence;
+import leCampusServer.domain.CrimeGeoFence;
 import leCampusServer.domain.Footprint;
 import leCampusServer.domain.JSONOrderedObject;
 import leCampusServer.domain.JSONResponse;
@@ -47,7 +48,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Controller
-@RequestMapping("/")
 public class RESTfulController {
 	@Autowired MemberService memberService;
 	@Autowired MemberRepository memberRepository;
@@ -70,15 +70,26 @@ public class RESTfulController {
 	Gson gson = new Gson();
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 	JSONObject jsonResponse = new JSONObject();
-
-	@RequestMapping(method = RequestMethod.GET)
-	public String index() {
-		System.out.println("IndexPage");
-		return "IndexPage";
+	
+	// Get all crime data
+	@RequestMapping(value = "/api/crime", method = RequestMethod.GET)
+	public @ResponseBody List<CrimeGeoFence> showCrimeGeoFence() {	
+		//JSONResponse crimeGeoFenceResponse = new JSONResponse();
+		//JSONArray crimeGeoFenceArray = new JSONArray();
+		List<CrimeGeoFence> crimeGeoFenceList = new ArrayList<>();
+		System.out.println("Received request for crime data from a client.");
+		
+		crimeGeoFenceList = (List<CrimeGeoFence>) crimeGeoFenceService.findAllCrimeGeoFences();
+		
+		//crimeGeoFenceResponse.setCrimeGeoFenceList(crimeGeoFenceList);
+		return crimeGeoFenceList;
 	}
 
 	
-
+	
+	
+	
+	
 	// Add a GeoFence by Modal for single
 	@RequestMapping(value = "/api/geofence/add", method = RequestMethod.GET)
 	@ResponseBody

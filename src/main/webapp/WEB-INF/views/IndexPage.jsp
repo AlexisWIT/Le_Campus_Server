@@ -31,6 +31,7 @@
 	<!-- Custom scripts -->
 	<script src="../scripts/interactiveMap.js" type="text/javascript"></script>
 	<script src="../scripts/IndexPage.js" type="text/javascript"></script>
+	<script src="../scripts/manageData.js" type="text/javascript"></script>
 	
 	<!-- Custom css -->
 	<link href="resources/css/index.css" rel="stylesheet" >
@@ -74,8 +75,9 @@
 							<li><a href="#">About</a></li>
 							<li role="separator" class="divider"></li>
 							<li class="dropdown-header">Manage Data</li>
-							<li><a href="#">Import from JSON</a></li>
-							<li><a href="#">Clear all</a></li>
+							<li id="importCrimeData" data-toggle="modal" data-target="#addCrimeDataModal"><a href="#">Import Crime Data from JSON</a></li>
+							<li id="importEventData" data-toggle="modal" data-target="#addPublicEventModal"><a href="#">Import Event Data from JSON</a></li>
+							<li id="clearAllData"><a href="#">Clear all</a></li>
 						</ul>
 					  
 					</li>
@@ -105,9 +107,9 @@
 			<div id="operation-buttons">
 				<p>
 					<button class="btn btn-sm btn-info" id="refreshMapBtn" data-toggle="modal" data-target="#refreshMap"><span class="glyphicon glyphicon-refresh"></span> Refresh Map</button>
-					<button class="btn btn-sm btn-primary" id="addGeoFenceBtn"data-toggle="modal" data-target="#addGeoFenceModal"><span class="glyphicon glyphicon-plus"></span> Add GeoFence</button>
-					<button class="btn btn-sm btn-primary" id="editGeoFenceBtn"data-toggle="modal" data-target="#editGeoFenceModal"><span class="glyphicon glyphicon-edit"></span> Edit GeoFence</button>
-					<button class="btn btn-sm btn-danger" id="deleteGeoFenceBtn"data-toggle="modal" data-target="#deleteGeoFenceModal"><span class="glyphicon glyphicon-trash"></span> Delete GeoFence</button>
+					<button class="btn btn-sm btn-primary" id="addGeoFenceBtn" data-toggle="modal" data-target="#addGeoFenceModal"><span class="glyphicon glyphicon-plus"></span> Add GeoFence</button>
+					<button class="btn btn-sm btn-primary" id="editGeoFenceBtn" data-toggle="modal" data-target="#editGeoFenceModal"><span class="glyphicon glyphicon-edit"></span> Edit GeoFence</button>
+					<button class="btn btn-sm btn-danger" id="deleteGeoFenceBtn" data-toggle="modal" data-target="#deleteGeoFenceModal"><span class="glyphicon glyphicon-trash"></span> Delete GeoFence</button>
 					<button class="btn btn-sm btn-primary" id="viewRequestBtn" data-toggle="modal" data-target="#viewRequest"><span class="glyphicon glyphicon-circle-arrow-up"></span> View Request</button>
 					<button class="btn btn-sm btn-primary" id="viewFootprintBtn" data-toggle="modal" data-target="#viewFootprint"><span class="glyphicon glyphicon-circle-arrow-down"></span> View Footprint</button>
 				</p>
@@ -117,7 +119,8 @@
 			<div id="googleMapDiv">	
 				<div id="googleMap" style="border: solid 1px black; width:100%; height:600px"></div>
 				
-				<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGwHcTQnP_PC_NXstZIYhR7VQFQ1sjSE&callback=initMap&language=en-UK" async defer></script>
+				<script src="https://maps.googleapis.com/maps/api/js?key=
+				AIzaSyBrGwHcTQnP_PC_NXstZIYhR7VQFQ1sjSE&callback=initMap&language=en-UK" async defer></script>
 				
 				<div hidden>
 					<input id="geofenceName" ></input>
@@ -149,27 +152,27 @@
 		            <div class="modal-body" id="singleAddBody">
 		            	<div id="addSingleGeoFence">
 			           		<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-asterisk"></i> GeoFence Name</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-flag"></i> Name</span>
 		        				<input id="geofence-name"	name="geofence-name" class="form-control" placeholder="New GeoFence">
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i> Address</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-home"></i> Address</span>
 		        				<input id="geofence-address"		name="geofence-address" class="form-control" placeholder="University Road">
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i> Image URL</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-picture"></i> Image URL</span>
 		        				<input id="geofence-image-url"	name="geofence-image-url" class="form-control" placeholder="Image URL" >
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-heart-empty"></i> Category</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-education"></i> Category</span>
 		        				<input id="geofence-category"		name="geofence-category" class="form-control" placeholder="Department of Informatics" >
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-home"></i> Coordinate</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-map-marker"></i> Coordinate</span>
 		        				<input id="geofence-center"	name="geofence-center" class="form-control" placeholder="52.62179, -1.123867" >
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-home"></i> Website</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-link"></i> Website</span>
 		        				<input id="geofence-website"	name="geofence-website" class="form-control" placeholder="Website URL" >
 	        				</div>
 						
@@ -226,27 +229,27 @@
 	            		<div id="editSinglePerson">
 	            			<div hidden><input id="editToken"></input></div>
 			           		<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-asterisk"></i> GeoFence Name</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-flag"></i> GeoFence Name</span>
 		        				<input id="edit-geofence-name"	name="edit-geofence-name" class="form-control" placeholder="New GeoFence">
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i> Address</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-home"></i> Address</span>
 		        				<input id="edit-geofence-address"		name="edit-geofence-address" class="form-control" placeholder="University Road">
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i> Image URL</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-picture"></i> Image URL</span>
 		        				<input id="edit-geofence-image-url"	name="edit-geofence-image-url" class="form-control" placeholder="Image URL" >
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-heart-empty"></i> Category</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-education"></i> Category</span>
 		        				<input id="edit-geofence-category"		name="edit-geofence-category" class="form-control" placeholder="Department of Informatics" >
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-home"></i> Coordinate</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-map-marker"></i> Coordinate</span>
 		        				<input id="edit-geofence-center"	name="edit-geofence-center" class="form-control" placeholder="52.62179, -1.123867" >
 	        				</div>
 	        				<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-home"></i> Website</span>
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-link"></i> Website</span>
 		        				<input id="edit-geofence-website"	name="edit-geofence-website" class="form-control" placeholder="Website URL" >
 	        				</div>
 	        				<br>
@@ -301,7 +304,7 @@
 	            </div>
 	            
 	            <div class="modal-body">
-	            	<p>Please double-click a person to edit!</p>
+	            	<p>Please double-click a geofence to edit!</p>
 	            </div>
 	            
 	            <div class="modal-footer">
@@ -312,7 +315,73 @@
 	    </div>
 	</div>
 	
-	<!-- Modal 05 - Loading window -->
+	<!-- Modal 05 - Import Crime Data -->
+	<div class="modal fade" id="addCrimeDataModal" tabindex="-1" role="dialog" aria-labelledby="addCrimeDataModal" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	                <h4 class="modal-title" id="addCrimeDataLabel">Import New Crime Data</h4>
+	            </div>
+	            
+				<form class="form-group" id="form-addMultiNewCrimeData">		
+					<div class="modal-body" id="multiAddCrimeDataBody">	
+						<div id="addMultipleCrimeData">
+    						<label for="mutipleAddCrimeDataArea">Import Crime Data (JSON)</label>
+							<textarea class="form-control" id="mutipleAddCrimeDataArea" name="mutipleAddCrimeDataArea" rows="15"></textarea>
+							<div id="addErrorInfoMultiCrimeData" role="alert"> </div>
+							<br>
+							<div class="alert alert-info fade in out" id="multiCrimeDataAddInProgressAlert" role="alert"><span id="multiCrimeDataAddInProgressInfo"></span></div>
+							<div class="alert alert-danger fade in out" id="multiCrimeDataAddErrorAlert" role="alert"><span id="multiCrimeDataAddFailedInfo"></span></div>
+							<div class="alert alert-success fade in out" id="multiCrimeDataAddCompleteAlert" role="alert"><span id="multiCrimeDataAddCompleteInfo"></span></div>
+						</div>
+		            </div>
+
+		            <div class="modal-footer" id="multiAddCrimeDataFooter">
+		                <button type="button" class="btn btn-default" id="cancelAddMultiCrimeData" data-dismiss="modal">Cancel</button>
+		                <button type="submit" class="btn btn-primary" id="submit-newMultiCrimeData">Submit</button>
+		            </div>
+	            </form>
+	            
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- Modal 06 - Import Event Data -->
+	<div class="modal fade" id="addPublicEventModal" tabindex="-1" role="dialog" aria-labelledby="addPublicEventModal" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	                <h4 class="modal-title" id="addPublicEventLabel">Import New PublicEvent</h4>
+	            </div>
+	            
+				<form class="form-group" id="form-addMultiNewPublicEvent">		
+					<div class="modal-body" id="multiAddPublicEventBody">	
+						<div id="addMultiplePublicEvent">
+    						<label for="mutipleAddPublicEventArea">Import Multiple PublicEvents (JSON)</label>
+							<textarea class="form-control" id="mutipleAddPublicEventArea" name="mutipleAddPublicEventArea" rows="15"></textarea>
+							<div id="addErrorInfoMultiPublicEvent" role="alert"> </div>
+							<br>
+							<div class="alert alert-info fade in out" id="multiPublicEventAddInProgressAlert" role="alert"><span id="multiPublicEventAddInProgressInfo"></span></div>
+							<div class="alert alert-danger fade in out" id="multiPublicEventAddErrorAlert" role="alert"><span id="multiPublicEventAddFailedInfo"></span></div>
+							<div class="alert alert-success fade in out" id="multiPublicEventAddCompleteAlert" role="alert"><span id="multiPublicEventAddCompleteInfo"></span></div>
+						</div>
+		            </div>
+
+		            <div class="modal-footer" id="multiAddPublicEventFooter">
+		                <button type="button" class="btn btn-default" id="cancelAddMultiPublicEvent" data-dismiss="modal">Cancel</button>
+		                <button type="submit" class="btn btn-primary" id="submit-newMultiPublicEvent">Submit</button>
+		            </div>
+	            </form>
+	            
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- Modal 07 - Loading window -->
 	<div class="modal fade" id="loadingWindow" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="loadingWindowLabel" aria-hidden="true">
 	    <div class="modal-dialog">
 	        <div class="modal-content">
@@ -324,7 +393,6 @@
 	        </div>
 	    </div>
 	</div>
-
 
 </body>
 </html>

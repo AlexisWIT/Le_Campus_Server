@@ -6,7 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-// Data from: https://data.police.uk
+//	Data from: https://data.police.uk
+//	52.633, -1.133 (+-0.02)
+//	https://data.police.uk/api/crimes-street/all-crime?poly=52.643905,-1.130949:52.631823,-1.112374:52.615347,-1.130951:52.633000,-1.153609&date=2019-01
+
 @Entity
 public class CrimeGeoFence {
 

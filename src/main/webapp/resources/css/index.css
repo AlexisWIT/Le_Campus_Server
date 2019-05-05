@@ -5,23 +5,23 @@
     text-align:left;
 }
 
-#familyTreeSection {
+#googleMapSection {
 	display:none;
 }
 
-#showAncestorBtn {
+#viewRequestBtn {
 	display:none;
 }
 
-#showDescendantBtn {
+#viewFootprintBtn {
 	display:none;
 }
 
-#deletePersonBtn {
+#deleteGeoFenceBtn {
 	display:none;
 }
 
-#editPersonBtn {
+#editGeoFenceBtn {
 	display:none;
 }
 
