@@ -10,4 +10,5 @@ public interface CrimeGeoFenceRepository extends CrudRepository<CrimeGeoFence, I
 
 	List<CrimeGeoFence> findByCategory(String category);
 	List<CrimeGeoFence> findByLocation(String location);
+	List<CrimeGeoFence> findByTimeInMonth(String date);
 }

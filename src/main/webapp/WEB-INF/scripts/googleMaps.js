@@ -11,6 +11,8 @@ function initMap() {
 		},
 		zoom : 16
 	});
+	
+	initGeoFence();
 }
 
 function initGeoFence() {
@@ -21,4 +23,7 @@ function initEmergencyRequest() {
 	
 }
   
+function initCrimes() {
+	
+}
   

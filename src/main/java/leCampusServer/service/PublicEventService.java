@@ -14,8 +14,10 @@ public class PublicEventService {
 	@Autowired
 	private PublicEventRepository publicEventRepository;
 	
-	public Object findAllEvents() {
-		return publicEventRepository.findAll();
+	public List<PublicEvent> findAllEvents(String startTime) {
+		//return publicEventRepository.findAll();
+		return publicEventRepository.findAllByOrderByStartTimeAsc();
+		//return publicEventRepository.findByStartTimeGreaterThanOrderByStartTimeAsc(startTime);
 	}
 	
 	public Iterable findAllEventsIterable() {

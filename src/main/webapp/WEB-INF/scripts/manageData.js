@@ -82,24 +82,23 @@ $(document).ready(function () {
 				if (website === undefined || website == "" ) website=null;
 				
 				var data = 
-					'{"name": "'+name+
+					'{"properties":{"building": "'+name+
 					'", "address": "'+address+
-					'", "imageUrl": "'+imageUrl+
-					'", "category": "'+category+
-					'", "center": "'+center+
-					'", "website": "'+website+'"}';
+					'", "photo": "'+imageUrl+
+					'", "collegeCorporate": "'+category+
+					'", "directionsButton": "'+center+
+					'", "urlOne": "'+website+'"}}';
 				console.log(data);
 				
 				var jsonData = JSON.parse(data);
 				console.log("Data sent: "+jsonData);
 				
-				
 				$.ajax({
 					type: "POST",
-					url: "/api/geofence/addJSON",
+					url: "/LeCampusServer/Building",
 					contentType: "application/json",
 					dataType: 'json',
-					data: JSON.stringify(jsonData),
+					data: '['+JSON.stringify(jsonData)+']',
 					success:function(response){
 						console.log(response.result);
 						if(response.result=="false"){
@@ -185,6 +184,7 @@ $(document).ready(function () {
 								$("#multiAddCompleteInfo").html("<strong>Done!</strong> "+response.message);
 								$("#multiAddCompleteAlert").fadeIn();
 								completeChange(response.result);
+								$("#mutipleAddArea").val('');
 								$("#addGeoFenceModal").modal('hide');
 								
 							}
@@ -279,7 +279,15 @@ $(document).ready(function () {
 				if (website === undefined || website == "" ) website=null;
 				var actualKey = $("#editToken").val();
 				
-				var data = '{ "name": "'+name+'", "address": "'+address+'", "imageUrl": "'+imageUrl+'", "category": "'+category+'", "center": "'+center+'", "website": "'+website+'", "actualKey": "'+actualKey+'"}';
+				var data = 
+					'{ "name": "'+name+
+					'", "address": "'+address+
+					'", "imageUrl": "'+imageUrl+
+					'", "category": "'+category+
+					'", "center": "'+center+
+					'", "website": "'+website+
+					'", "actualKey": "'+actualKey+'"}';
+				
 				console.log(data);
 				
 				var jsonData = JSON.parse(data);

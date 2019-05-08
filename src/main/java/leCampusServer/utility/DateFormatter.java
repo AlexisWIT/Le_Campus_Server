@@ -9,10 +9,11 @@ import java.util.Date;
 public class DateFormatter {
 	
 	private static final String SERVER_PATTERN = "yyyy-MM-dd'T'HH:mm:ssZ";
+	//private static final String SERVER_PATTERN_2 = "yyyy-MM-dd";
 	private static final String THE_LIST = "yyyy-MM-dd'T'HH:mmZ";
 	private static final String EVENT_BRITE = "yyyy-MM-dd";
 
-	public String convertToServerString (String dateString, boolean randomTime) {
+	public String dateStringToServerDateString (String dateString, boolean randomTime) {
 		DateFormat serverDateFormat = new SimpleDateFormat(SERVER_PATTERN);
 		DateFormat dateFormatA = new SimpleDateFormat(THE_LIST);
 		DateFormat dateFormatB = new SimpleDateFormat(EVENT_BRITE);
@@ -38,6 +39,22 @@ public class DateFormatter {
 		
 		return serverDateFormat.format(result);
 		
+	}
+	
+	public String dateToServerDateString (Date date) {
+		DateFormat serverDateFormat = new SimpleDateFormat(SERVER_PATTERN);
+		return serverDateFormat.format(date);
+	}
+	
+	public Date serverDateStringToDate (String string) {
+		DateFormat serverDateFormat = new SimpleDateFormat(SERVER_PATTERN);
+		Date result = null;
+		try {
+			result = serverDateFormat.parse(string);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	public String randomEndTime (String startTime) {

@@ -1,5 +1,6 @@
 package leCampusServer.controller;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +48,7 @@ import leCampusServer.service.MemberService;
 import leCampusServer.service.PublicEventService;
 import leCampusServer.service.UserService;
 import leCampusServer.utility.DateFormatter;
+import leCampusServer.utility.NumberProcessor;
 
 @Controller
 @RequestMapping("/")
@@ -96,8 +98,7 @@ public class InterfaceController {
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/LeCampusServer/EmergencyRequest", method=RequestMethod.GET)
-	@ResponseBody
-	public JSONResponse showEmergencyRequest() {
+	public @ResponseBody JSONResponse showEmergencyRequest() {
 		JSONResponse emergencyRequestResponse = new JSONResponse();
 		List<EmergencyRequest> emergencyRequestList = new ArrayList<>();
 		
@@ -123,11 +124,14 @@ public class InterfaceController {
 		
 	}
 	
-	// add building by JSON
-	@RequestMapping(value="/LeCampusServer/Building", method=RequestMethod.PATCH)
-	@ResponseBody
-	public Object addMultiBuilding(@RequestBody String buildingJSONString) throws ParseException {
-		System.out.println("Received request for adding builing ");
+	// add single building by JSON
+	
+	
+	
+	// add buildings by JSON
+	@RequestMapping(value="/LeCampusServer/Building", method=RequestMethod.POST)
+	public @ResponseBody JSONResponse addMultiBuilding(@RequestBody String buildingJSONString) throws ParseException {
+		System.out.println("Received request for adding building "+buildingJSONString);
 		JSONResponse buildingGeoFenceResponse = new JSONResponse();
 		
 		final Gson gson = new Gson();
@@ -140,24 +144,33 @@ public class InterfaceController {
 		} else if (inputChecker.isValidJSON(buildingJSONString, gson)) {
 				
 			JSONArray jsonArray = new JSONArray(buildingJSONString);
-			int progress = 0;
+			double progress = 0.00;
 			for (int i=0; i<jsonArray.length(); i++) {
 				JSONObject buildingJSON = jsonArray.getJSONObject(i);
 				JSONObject properties = buildingJSON.getJSONObject("properties");
-				JSONObject geometry = buildingJSON.getJSONObject("geometry");
 				String baseUrl = "https://www.le.ac.uk/maps/assets/";
 				
 				try {
 					BuildingGeoFence buildingGeoFence = new BuildingGeoFence();
 					buildingGeoFence.setBuilding(properties.getString("building"));
 					buildingGeoFence.setAddress(properties.getString("address"));
-					buildingGeoFence.setImageURL("images/photos/"+properties.getString("photo"));
+					buildingGeoFence.setImageURL(baseUrl+"images/photos/"+properties.getString("photo"));
 					buildingGeoFence.setWebsiteURL(properties.getString("urlOne"));
 					buildingGeoFence.setCollegeName(properties.getString("collegeCorporate"));
 					buildingGeoFence.setDirectionPoint(properties.getString("directionsButton").replace("//", ""));
-					buildingGeoFence.setNodeList(geometry.getJSONArray("coordinates").toString());
+					try {
+						JSONObject geometry = buildingJSON.getJSONObject("geometry");
+						buildingGeoFence.setNodeList(geometry.getJSONArray("coordinates").toString().replace("[[[", "[[").replace("]]]", "]]"));
+					} catch (JSONException e) {}
 					
 					buildingGeoFenceService.saveBuildingGeoFence(buildingGeoFence);
+					
+					// Calculate progress
+					double p = NumberProcessor.round(Double.valueOf(i)/Double.valueOf(jsonArray.length()), 2);
+					if (p >= progress+0.02) {
+						System.out.print(">");
+						progress+=0.02;
+					}
 					
 				} catch (JSONException e) {
 					buildingGeoFenceResponse.setResult("false");
@@ -169,7 +182,7 @@ public class InterfaceController {
 			}
 			buildingGeoFenceResponse.setResult("true");
 			buildingGeoFenceResponse.setMessage("Data of "+jsonArray.length()+"Buildings has been added to Database. ");
-			System.out.println("Data of "+jsonArray.length()+"Buildings has been added to Database ");
+			System.out.println("\nData of "+jsonArray.length()+" Building(s) has been added to Database ");
 			return buildingGeoFenceResponse;
 			
 		} else {
@@ -183,8 +196,7 @@ public class InterfaceController {
 	
 	// edit & update building geofence
 	@RequestMapping(value="/LeCampusServer/Building", method=RequestMethod.PATCH)
-	@ResponseBody
-	public Object editGeoFence(@RequestBody String geoFence) throws ParseException {
+	public @ResponseBody JSONResponse editGeoFence(@RequestBody String geoFence) throws ParseException {
 		System.out.println("Received request for editing GeoFence :"+geoFence);
 		final Gson gson = new Gson();
 		JSONParser jsonParser = new JSONParser();
@@ -239,7 +251,7 @@ public class InterfaceController {
 		} else if (inputChecker.isValidJSON(crimeDataJSONString, gson)) {
 				
 			JSONArray jsonArray = new JSONArray(crimeDataJSONString);
-			int progress = 0;
+			double progress = 0.00;
 			for (int i=0; i<jsonArray.length(); i++) {
 				JSONObject crimeJSON = jsonArray.getJSONObject(i);
 				
@@ -253,9 +265,11 @@ public class InterfaceController {
 					CrimeGeoFence crimeGeoFence = new CrimeGeoFence(category, latitude, longitude, location, timeInMonth);
 					crimeGeoFenceService.saveCrimeGeoFence(crimeGeoFence);
 					
-					if (progress == jsonArray.length()*0.1*progress) {
+					// Calculate progress
+					double p = NumberProcessor.round(Double.valueOf(i)/Double.valueOf(jsonArray.length()), 2);
+					if (p >= progress+0.02) {
 						System.out.print(">");
-						progress++;
+						progress+=0.02;
 					}
 					
 				} catch (JSONException e) {
@@ -266,8 +280,8 @@ public class InterfaceController {
 				
 			}
 			crimeGeoFenceResponse.setResult("true");
-			crimeGeoFenceResponse.setMessage("Data of "+jsonArray.length()+"Crimes has been added to Database ");
-			System.out.println("Data of "+jsonArray.length()+"Crimes has been added to Database ");
+			crimeGeoFenceResponse.setMessage("Data of "+jsonArray.length()+" Crimes has been added to Database ");
+			System.out.println("\nData of "+jsonArray.length()+" Crimes has been added to Database ");
 			return crimeGeoFenceResponse;
 			
 		} else {
@@ -295,7 +309,7 @@ public class InterfaceController {
 		} else if (inputChecker.isValidJSON(publicEventJSONString, gson)) {
 				
 			JSONArray jsonArray = new JSONArray(publicEventJSONString);
-			int progress = 0;
+			double progress = 0.00;
 			for (int i=0; i<jsonArray.length(); i++) {
 				JSONObject eventJson = jsonArray.getJSONObject(i);
 				
@@ -324,7 +338,7 @@ public class InterfaceController {
 						publicEvent.setLon(eventJson.getJSONObject("location").getJSONObject("geo").getString("longitude"));
 					}
 					
-					String startTime = dateFormatter.convertToServerString(eventJson.getString("startDate"), true);
+					String startTime = dateFormatter.dateStringToServerDateString(eventJson.getString("startDate"), true);
 					String endTime = dateFormatter.randomEndTime(startTime);
 					publicEvent.setStartTime(startTime);
 					publicEvent.setEndTime(endTime);
@@ -338,14 +352,16 @@ public class InterfaceController {
 						publicEvent.setImageUrl(eventJson.getString("image"));
 						
 					} catch (JSONException e) {
-						publicEvent.setImageUrl(eventJson.getJSONObject("image").getString("url"));
+						publicEvent.setImageUrl(eventJson.getJSONObject("image").getString("url").replace("_thumb", ""));
 					}
 					
 					publicEventService.saveEvent(publicEvent);
 					
-					if (progress == jsonArray.length()*0.1*progress) {
+					// Calculate progress
+					double p = NumberProcessor.round(Double.valueOf(i)/Double.valueOf(jsonArray.length()), 2);
+					if (p >= progress+0.02) {
 						System.out.print(">");
-						progress++;
+						progress+=0.02;
 					}
 					
 				} catch (JSONException e) {
@@ -356,7 +372,8 @@ public class InterfaceController {
 				
 			}
 			publicEventResponse.setResult("true");
-			publicEventResponse.setMessage("Data of "+jsonArray.length()+"Crimes has been added to Database ");
+			publicEventResponse.setMessage("Data of "+jsonArray.length()+" Events has been added to Database ");
+			System.out.println("\nData of "+jsonArray.length()+" Events has been added to Database ");
 			return publicEventResponse;
 			
 		} else {

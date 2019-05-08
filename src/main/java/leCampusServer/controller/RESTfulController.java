@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import leCampusServer.domain.Footprint;
 import leCampusServer.domain.JSONOrderedObject;
 import leCampusServer.domain.JSONResponse;
 import leCampusServer.domain.Member;
+import leCampusServer.domain.PublicEvent;
 import leCampusServer.domain.User;
 import leCampusServer.repository.BuildingGeoFenceRepository;
 import leCampusServer.repository.CrimeGeoFenceRepository;
@@ -31,12 +33,16 @@ import leCampusServer.service.FootprintService;
 import leCampusServer.service.MemberService;
 import leCampusServer.service.PublicEventService;
 import leCampusServer.service.UserService;
+import leCampusServer.utility.DateFormatter;
 import leCampusServer.utility.JSONValidator;
+import leCampusServer.utility.NumberProcessor;
 import leCampusServer.utility.TextValidator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,74 +79,51 @@ public class RESTfulController {
 	
 	// Get all crime data
 	@RequestMapping(value = "/api/crime", method = RequestMethod.GET)
-	public @ResponseBody List<CrimeGeoFence> showCrimeGeoFence() {	
-		//JSONResponse crimeGeoFenceResponse = new JSONResponse();
-		//JSONArray crimeGeoFenceArray = new JSONArray();
+	public @ResponseBody List<CrimeGeoFence> showCrimeGeoFence(@RequestHeader("Timestamp") String timestamp) {
 		List<CrimeGeoFence> crimeGeoFenceList = new ArrayList<>();
-		System.out.println("Received request for crime data from a client.");
+		System.out.println("Received request for crime data from a client. timestamp ["+timestamp+"]");
 		
 		crimeGeoFenceList = (List<CrimeGeoFence>) crimeGeoFenceService.findAllCrimeGeoFences();
-		
-		//crimeGeoFenceResponse.setCrimeGeoFenceList(crimeGeoFenceList);
 		return crimeGeoFenceList;
 	}
-
 	
-	
-	
-	
-	
-	// Add a GeoFence by Modal for single
-	@RequestMapping(value = "/api/geofence/add", method = RequestMethod.GET)
-	@ResponseBody
-	public Object addMember(@RequestParam(value = "name", required = true) String name,
-			@RequestParam(value = "address", required = true) String address,
-			@RequestParam(value = "imageUrl", required = false) String imageUrl,
-			@RequestParam(value = "category", required = false) String category,
-			@RequestParam(value = "center", required = false) String center,
-			@RequestParam(value = "website", required = false) String website) {
+	// Get crime data by date
+	@RequestMapping(value = "/api/crime/{date}", method = RequestMethod.GET)
+	public @ResponseBody List<CrimeGeoFence> showCrimeGeoFenceByDate(@RequestHeader("Timestamp") String timestamp, @PathVariable String date) {
+		List<CrimeGeoFence> crimeGeoFenceList = new ArrayList<>();
+		System.out.println("Received request for crime data in ["+date+"] from a client. timestamp ["+timestamp+"]");
 		
-		JSONObject jsonResponseAdd = new JSONObject();
-		
-		BuildingGeoFence buildingGeoFence = new BuildingGeoFence();
-		buildingGeoFence.setBuilding(name);
-		buildingGeoFence.setAddress(address);
-		buildingGeoFence.setImageURL(imageUrl);
-		buildingGeoFence.setCollegeName(category);
-		buildingGeoFence.setDirectionPoint(center);
-		buildingGeoFence.setWebsiteURL(website);
-		
-		buildingGeoFenceService.saveBuildingGeoFence(buildingGeoFence);
-
-		System.out.println("SAVED: " + buildingGeoFence.toString());
-		System.out.println("SUCCESS: The person input have been saved!");
-		jsonResponseAdd.put("result", "true");
-		return jsonResponseAdd.toMap();
+		crimeGeoFenceList = (List<CrimeGeoFence>) crimeGeoFenceService.findByDate(date);
+		return crimeGeoFenceList;
 	}
-
-	// Add GeoFences by Modal for JSON - could be mutiple
-	@RequestMapping(value = "/api/geofence/addJSON", method = RequestMethod.POST)
-	@ResponseBody
-	public Object addMemberJSON(@RequestBody String memberInput) {
-		JSONObject jsonResponseAdd = new JSONObject();
-		
-
-		return jsonResponseAdd.toMap();
-	}
-
-	// Delete a GeoFence
-	@RequestMapping(value = "/api/geofence/delete/{id}", method = RequestMethod.GET)
-	@ResponseBody
-	public Object deleteGeoFence(@PathVariable Integer id) {
-		JSONObject jsonResponseDelete = new JSONObject();
-		Member member = memberService.findById(id);
-		
-		
-		return jsonResponseDelete.toMap();
-
-	}
-
 	
+	// Get all public event data
+	@RequestMapping(value = "/api/public-event", method = RequestMethod.GET)
+	public @ResponseBody List<PublicEvent> getCrimeGeoFenceByDate(@RequestHeader("Timestamp") String timestamp) {
+		List<PublicEvent> result = new ArrayList<>();
+		
+		DateFormatter dateFormatter = new DateFormatter();
+		Calendar calendar = Calendar.getInstance();
+		Date currentDate = calendar.getTime();
+		
+		String dateForQuery = dateFormatter.dateToServerDateString(currentDate);
+		List<PublicEvent> publicEventList = (List<PublicEvent>) publicEventService.findAllEvents("dateForQuery");
+		System.out.println("Received request for event data in from a client. timestamp ["+timestamp+"], "+dateForQuery+", Result size: "+publicEventList.size());
+		
+		//return publicEventList;
+		for (PublicEvent event : publicEventList) {
+			Date eventStartDate = dateFormatter.serverDateStringToDate(event.getStartTime());
+			if (eventStartDate.after(currentDate)) {
+				result.add(event);
+			}
+			
+		}
+		
+		return result;
+	}
+	//
+	
+
 	// Add/update footprint - JSONArray
 	@RequestMapping(value="/api/footprint", method = RequestMethod.POST)
 	@ResponseBody

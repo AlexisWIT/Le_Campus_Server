@@ -34,6 +34,10 @@ public class CrimeGeoFenceService {
 		return crimeGeoFenceRepository.findByLocation(location);
 	}
 	
+	public List<CrimeGeoFence> findByDate(String date) {
+		return crimeGeoFenceRepository.findByTimeInMonth(date);
+	}
+	
 	public void deleteByServerId(int id) {
 		crimeGeoFenceRepository.delete(id);
 	}

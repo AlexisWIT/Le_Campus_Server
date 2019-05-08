@@ -20,6 +20,7 @@ public class BuildingGeoFence {
 	private String websiteURL;
 	private String collegeName;
 	private String directionPoint; // the coordinate in the middle
+	@Column(columnDefinition = "TEXT")
 	private String nodeList; 
 	
 	/**
@@ -114,5 +115,13 @@ public class BuildingGeoFence {
 	public void setNodeList(String nodeList) {
 		this.nodeList = nodeList;
 	}
+
+	@Override
+	public String toString() {
+		return "BuildingGeoFence [serverId=" + serverId + ", building=" + building + ", address=" + address
+				+ ", imageURL=" + imageURL + ", websiteURL=" + websiteURL + ", collegeName=" + collegeName
+				+ ", directionPoint=" + directionPoint + "]";
+	}
+	
 	
 }

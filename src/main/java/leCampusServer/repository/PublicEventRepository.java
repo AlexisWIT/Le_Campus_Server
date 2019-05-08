@@ -16,6 +16,7 @@ public interface PublicEventRepository extends CrudRepository<PublicEvent, Integ
 	List<PublicEvent> findByAddress(String address);
 	List<PublicEvent> findByPostCode(String postCode);
 	List<PublicEvent> findByHost(String host);
+	List<PublicEvent> findAllByOrderByStartTimeAsc();
+	List<PublicEvent> findByStartTimeGreaterThanOrderByStartTimeAsc(String startTime);
 	
-
 }
